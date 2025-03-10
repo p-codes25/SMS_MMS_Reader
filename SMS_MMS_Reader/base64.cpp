@@ -5,7 +5,7 @@
 
    Version: 1.01.00
 
-   Copyright (C) 2004-2017 René Nyffenegger
+   Copyright (C) 2004-2017 RenÃ© Nyffenegger
 
    *** NOTE: Modified by p_codes25 to use _T() macros and the like,
    for Visual C/C++ UNICODE support. Also modified decode function to
@@ -29,7 +29,7 @@
 
    3. This notice may not be removed or altered from any source distribution.
 
-   René Nyffenegger rene.nyffenegger@adp-gmbh.ch
+   RenÃ© Nyffenegger rene.nyffenegger@adp-gmbh.ch
 
 */
 
