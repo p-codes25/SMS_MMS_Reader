@@ -4,7 +4,9 @@
 
 This is a Windows application which loads and displays backup files created by the [SMS Backup & Restore app for Android, by SyncTech](https://www.synctech.com.au/).  I have no affiliation with them - I just wrote this program using their [documented backup file format](https://www.synctech.com.au/sms-backup-restore/fields-in-xml-backup-files/).
 
-SMS Backup & Restore is an awesome app for backing up SMS/MMS messages and phone call logs from an Android phone.  It writes the backups to an XML-formatted file which can be transferred to a Windows PC and opened and viewed using the SMS_MMS_Reader app.
+SMS Backup & Restore is an awesome app for backing up SMS/MMS messages and phone call logs from an Android phone.  It writes the backups to an XML-formatted file which can be transferred to a Windows PC and opened and viewed using this SMS_MMS_Reader app.
+
+I wrote the SMS_MMS_Reader app because I found I was accumulating many thousands of SMS and MMS messages on my phone, and the backups generated with SMS Backup & Restore were quite large -- several hundred MB to 1GB or more in size.  The existing options for viewing the message backups did not seem to work well with large backup files like this, and I wanted more flexibility in viewing the backed-up messages.
 
 ## Features
 
@@ -36,6 +38,8 @@ The SMS_MMS_Reader app offers the following capabilities:
 
 I built the project using Visual Studio 2015, but it should build and run in any later Visual Studio version as well.  There are x86 (32-bit) and x64 (64-bit) Windows targets, and I've tested both in Debug and Release mode.
 
+I recommend the x64 version, because it's probably faster and it can handle larger .xml files (the 32-bit version probably maxes out at loading around 1GB of .xml backup data).
+
 Release mode is significantly faster, so you will probably want to use that for loading large backup files.
 
 # User's Guide
@@ -58,17 +62,17 @@ There are a couple ways to open the .xml files in SMS_MMS_Reader:
 
 Each document window in the SMS_MMS_Reader app indicates the .xml filename at the top, and then lists all the SMS/MMS message conversations in the file.  For each conversation, the following columns are shown in the window:
 
-	* Address - Contains one or more addresses (phone numbers or email addresses, or maybe other types) for the conversation.
+* Address - Contains one or more addresses (phone numbers or email addresses, or maybe other types) for the conversation.
 
-	* Name - Lists the names associated with the addresses, separated by commas.  Note: I have seen an issue where the names don't always match up with the addresses - I'll be working on that. It's rare in my experience though!
+* Name - Lists the names associated with the addresses, separated by commas.  Note: I have seen an issue where the names don't always match up with the addresses - I'll be working on that. It's rare in my experience though!
 
-	* # Messages - Shows the number of messages in each conversation.
+* \# Messages - Shows the number of messages in each conversation.
 
-	* First Date/Time - Shows the date/time of the oldest loaded message for each conversation.
+* First Date/Time - Shows the date/time of the oldest loaded message for each conversation.
 
-	* Last Date/Time - Shows the date/time of the newest loaded message for each conversation.
+* Last Date/Time - Shows the date/time of the newest loaded message for each conversation.
 
-	* Total Size - Shows the total size of all the loaded messages for each conversation, including attachments.
+* Total Size - Shows the total size of all the loaded messages for each conversation, including attachments.
 
 You can click on any of the column headings in order to sort the conversations by that column; this makes it easy to find the oldest/newest conversations or the conversations taking up the most storage space, for example.
 
@@ -114,5 +118,5 @@ The View -> Open Attachments menu lets you choose how to open inline or linked a
 
 ### Printing/Saving
 
-I have not put any work into the printing/saving capabilities of the app.  Printing seems to work (I tried printing to a PDF generator, for example).  Saving does not seem to do anything (it generates an empty .html file).  I might work on that in the future.
+I have not put any work into the printing/saving capabilities of the app.  Printing seems to work (I tried printing to a PDF generator, for example).  Saving does not seem to do anything (it generates an empty .html file).  I might work on that in the future (e.g. to allow saving a filtered set of conversations and messages to a new file).
 
