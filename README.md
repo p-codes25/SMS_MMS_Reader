@@ -2,11 +2,11 @@
 
 ## Overview
 
-This is a Windows application which loads and displays backup files created by the [SMS Backup & Restore app for Android, by SyncTech](https://www.synctech.com.au/).  I have no affiliation with them - I just wrote this program using their [documented backup file format](https://www.synctech.com.au/sms-backup-restore/fields-in-xml-backup-files/).
+This is a Windows application which loads and displays backup files created by the [SMS Backup & Restore app for Android, by SyncTech](https://www.synctech.com.au/).  I have no affiliation with them&mdash;I just wrote this program using their [documented backup file format](https://www.synctech.com.au/sms-backup-restore/fields-in-xml-backup-files/).
 
 SMS Backup & Restore is an awesome app for backing up SMS/MMS messages and phone call logs from an Android phone.  It writes the backups to an XML-formatted file which can be transferred to a Windows PC and opened and viewed using this SMS_MMS_Reader app.
 
-I wrote the SMS_MMS_Reader app because I found I was accumulating many thousands of SMS and MMS messages on my phone, and the backups generated with SMS Backup & Restore were quite large -- several hundred MB to 1GB or more in size.  The existing options for viewing the message backups did not seem to work well with large backup files like this, and I wanted more flexibility in viewing the backed-up messages.
+I wrote the SMS_MMS_Reader app because I found I was accumulating many thousands of SMS and MMS messages on my phone, and the backups generated with SMS Backup & Restore were quite large&mdash;several hundred MB to 1GB or more in size.  The existing options for viewing the message backups did not seem to work well with large backup files like this, and I wanted more flexibility in viewing the backed-up messages.
 
 ## Features
 
@@ -14,13 +14,13 @@ The SMS_MMS_Reader app offers the following capabilities:
 
 * It's built as a Windows MFC app for x86 (32-bit) or x64 (64-bit) systems running Windows 7 or later (possibly older versions too).
 
-* It's fairly fast -- a release build can load a 1GB SMS/MMS backup file in around 10 seconds on a reasonably fast system.
+* It's fairly fast&mdash;a release build can load a 1GB SMS/MMS backup file in around 10 seconds on a reasonably fast system.
 
-* You can drag-and-drop to load multiple backup files into the viewer, into a single window or into separate windows.
+* You can drag-and-drop to load multiple backup files into the viewer, into a single window or separate windows.
 
 * You can view the list of conversations, with the name(s) and phone number(s) of each, along with the number of messages and total storage size used in total by each conversation.
 
-* You can view and sort the list of message conversations (threads) in each window.
+* You can view and sort the list of message conversations (threads) in each window, by name, phone number, number of messages, total size, or first or last message date/time.
 
 * You can select a conversation (message thread) and double-click or press Enter to view that conversation's messages in a separate window.
 
@@ -50,7 +50,7 @@ To use the program, you will first have to transfer the backup files generated b
 
 There are a couple ways to open the .xml files in SMS_MMS_Reader:
 
-* Use SMS_MMS_Reader's File -> Open menu command to select a single file to open.
+* Use SMS_MMS_Reader's **File -> Open** menu command to select a single file to open.
 
 * Or, you can select multiple files from Windows Explorer and drag-and-drop them onto the SMS_MMS_Reader window.  When you do that, you will be asked "Do you want to open all the files in a single window?"
 
@@ -60,7 +60,11 @@ There are a couple ways to open the .xml files in SMS_MMS_Reader:
 
 ## Main File View
 
-Each document window in the SMS_MMS_Reader app indicates the .xml filename at the top, and then lists all the SMS/MMS message conversations in the file.  For each conversation, the following columns are shown in the window:
+Each document window in the SMS_MMS_Reader app indicates the .xml filename at the top, and then lists all the SMS/MMS message conversations in the file.  Here is an example of how it looks:
+
+![Sample conversation list window](https://github.com/p-codes25/SMS_MMS_Reader/blob/144f86836fa8ec05bcbcb13eca66393e914a6436/Screenshots/list_view.png)
+
+For each conversation, the following columns are shown in the window:
 
 * Address - Contains one or more addresses (phone numbers or email addresses, or maybe other types) for the conversation.
 
@@ -80,7 +84,9 @@ To view a conversation, double-click it in the list, or select it with the keybo
 
 ## Filtering Conversations and Messages
 
-From the main file view, you can use the View -> Filter Conversations... menu command to filter which conversations and messages get displayed.
+From the main file view, you can use the **View -> Filter Conversations...** menu command or **Ctrl+Shift+F** shortcut to filter which conversations and messages get displayed.  Here is how the filter dialog appears:
+
+![Filter dialog](https://github.com/p-codes25/SMS_MMS_Reader/blob/144f86836fa8ec05bcbcb13eca66393e914a6436/Screenshots/filters.png)
 
 The first field in the dialog lets you filter conversations by the Address and Name field. Any text you enter here, must appear in either the Address or Name field of a conversation in order for that conversation to be shown.
 
@@ -88,17 +94,19 @@ Next, the dialog offers a field that lets you filter by message text.  Any text 
 
 Below that, there are two date/calendar controls which let you specify the starting and ending date range (inclusive) to display.  Only conversations that contain at least one message within the specified date range, will be displayed.
 
-Finally, there are two radio buttons which let you control the filtering of messages within conversations:
+Finally, there are two radio buttons which let you control the filtering of messages when you open up a conversation view:
 
-* Selecting the first radio button causes all messages to be shown, for any conversations that meet the filter criteria above.
+* Selecting the first radio button causes *all* messages to be shown, for any conversations that meet the filter criteria you have defined.
 
-* Selecting the second radio button causes only messages that meet the filter criteria to be shown.
-
-In other words, these two radio buttons lets you choose whether *all* messages or *filtered* messages appear within the conversations that match the filters you specify.
+* Selecting the second radio button causes *only messages that meet the filter criteria* to be shown.
 
 ## Conversation View
 
-When you double-click on a conversation in the list (or select it and press Enter), a new conversation view window opens for that conversation.  The conversation view window shows the messages in that conversation (the messages may be filtered, depending on the filtering options you set in the main file view - see above).
+When you double-click on a conversation in the list (or select it and press Enter), a new conversation view window opens for that conversation.  The conversation view window shows the messages in that conversation (the messages may be filtered, depending on the filtering options you set in the main file view&mdash;see above).
+
+Here is an example of how the conversation view window appears:
+
+![Example conversation view window](https://github.com/p-codes25/SMS_MMS_Reader/blob/144f86836fa8ec05bcbcb13eca66393e914a6436/Screenshots/conversation_view.png)
 
 At the top of the window, the names and addresses (phone numbers or email addresses) for the conversation are shown.
 
@@ -106,15 +114,19 @@ Messages shown in grey are "received" messages; messages shown indented in green
 
 ### MMS Attachments
 
-Some types of MMS images are shown inline as thumbnails - currently these are GIF, JPEG and PNG images, because the Microsoft CHtmlView class can display those.  Other MMS attachment types, such as video or audio clips, are shown as "Attachment" plus the filename, and you can click on those to open them.
+Some types of MMS images are shown inline as thumbnails&mdash;currently these are GIF, JPEG and PNG images, because the Microsoft CHtmlView class can display those.  Other MMS attachment types, such as video or audio clips, are shown as "Attachment" plus the filename, and you can click on those to open them.
 
-The View -> Open Attachments menu lets you choose how to open inline or linked attachments when you click on them.  There are three choices:
+The **View -> Open Attachments** menu lets you choose how to open inline or linked attachments when you click on them.  There are three choices:
 
-* In Same Window - the attachment will be loaded and "navigated to" in the same window.  You can use the "Back" toolbar button (the red arrow pointing left) to navigate back to the main conversation display (or use the Alt+Left Arrow keyboard shortcut).
+* **In Same Window** - the attachment will be loaded and "navigated to" in the same window.  You can use the "Back" toolbar button (the red arrow pointing left) to navigate back to the main conversation display (or use the **Alt+Left Arrow** keyboard shortcut).
 
-* In New Window - clicking the attachment will open a new document window showing just that attachment.  You can close the window when you are done viewing the attachment.
+* **In New Window** - clicking the attachment will open a new document window showing just that attachment.  You can close the window when you are done viewing the attachment.
 
-* In Default Windows Application - clicking the attachment will open the default Windows application for that attachment type.  NOTE - There is no prompt before the attachment will be opened, so be careful when opening any attachments from an unknown source!
+* **In Default Windows Application** - clicking the attachment will launch the default Windows application for that attachment type.  **NOTE** - There is no prompt before the attachment will be opened, so be careful when opening any attachments from an unknown source!
+
+Here is an example of how an attachment appears in "In New Window" view mode:
+
+![Sample attachment view window](https://github.com/p-codes25/SMS_MMS_Reader/blob/144f86836fa8ec05bcbcb13eca66393e914a6436/Screenshots/attachment_view.png)
 
 ### Printing/Saving
 
