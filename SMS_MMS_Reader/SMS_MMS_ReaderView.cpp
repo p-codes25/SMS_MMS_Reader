@@ -527,11 +527,15 @@ void CSMS_MMS_ReaderView::OnDblClkList(NMHDR *_pNMHDR, LRESULT *plResult)
 	// This isn't used, because we don't need it and because OnViewThread() doesn't supply it!
 	// NM_LISTVIEW *pNMListView = (NM_LISTVIEW *) pNMHDR;
 
+	const DWORD dwUpdateTicks = 250;
+
+	DWORD dwNextUpdate = 0;
 	POSITION pos;
 	int nIndex;
 	int nLen;
 	FILE *fp;
 	TCHAR szFileName[MAX_PATH];
+	CString strError;
 
 	// MMS part attachment file temp path for HTML <img> tag to refer to
 	TCHAR szMMSFile[MAX_PATH];
@@ -595,7 +599,12 @@ void CSMS_MMS_ReaderView::OnDblClkList(NMHDR *_pNMHDR, LRESULT *plResult)
 
 	if (_tfopen_s(&fp, szFileName, _T("w")) != 0)
 	{
-		AfxMessageBox(_T("Failed creating HTML output file!"), MB_OK);
+		int nError = errno;
+		TCHAR szError[256];
+
+		_tcserror_s(szError, _countof(szError), errno);
+		strError.Format(_T("Error %d (%s) creating HTML output file '%s'!"), nError, szError, szFileName);
+		AfxMessageBox(strError, MB_OK);
 		return;
 	}
 
@@ -667,7 +676,18 @@ void CSMS_MMS_ReaderView::OnDblClkList(NMHDR *_pNMHDR, LRESULT *plResult)
 		if (m_nFilterMessages && !MessageMatchesFilter(msg))
 			continue;
 
-		dlg.SetFractionComplete((double)nMessage / (double)nTotalMessages);
+		if (GetTickCount() >= dwNextUpdate)
+		{
+			if (!dlg.CheckCancelButton())
+			{
+				// Break out, but let the window open anyway in case the user just wants to view part of it
+				break;
+			}
+
+			dlg.SetFractionComplete((double)nMessage / (double)nTotalMessages);
+
+			dwNextUpdate = GetTickCount() + dwUpdateTicks;
+		}
 
 		// Apply different CSS styles for sent vs received messages.  TBD: colorize different 'from' addresses in group messages?
 		if (msg.m_Type == CSMSMessage::SMS_RECEIVED)
@@ -745,7 +765,9 @@ void CSMS_MMS_ReaderView::OnDblClkList(NMHDR *_pNMHDR, LRESULT *plResult)
 
 				if (!MakeTempFileName(szMMSFile, _countof(szMMSFile), thePart.m_strName.c_str()))
 				{
-					AfxMessageBox(_T("Failed creating MMS temporary filename!"), MB_OK);
+					strError.Format(_T("Failed creating MMS temporary filename: %s"), szMMSFile);
+
+					AfxMessageBox(strError, MB_OK);
 					return;
 				}
 
