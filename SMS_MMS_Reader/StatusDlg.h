@@ -14,6 +14,7 @@ public:
 	virtual ~CStatusDlg();
 
 	void SetFractionComplete(double dFractionComplete);
+	bool CStatusDlg::CheckCancelButton();
 
 	BOOL m_bCancelClicked;
 
