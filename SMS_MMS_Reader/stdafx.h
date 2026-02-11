@@ -16,6 +16,9 @@
 // turns off MFC's hiding of some common and often safely ignored warning messages
 #define _AFX_ALL_WARNINGS
 
+// MS makes us define this ourselves, in order to use their recommended CRT function...
+#define _CRT_RAND_S
+
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 
