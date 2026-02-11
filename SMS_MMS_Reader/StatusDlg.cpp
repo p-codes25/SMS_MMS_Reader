@@ -48,3 +48,32 @@ void CStatusDlg::OnCancel()
 
 	CDialogEx::OnCancel();
 }
+
+/*
+ *	CheckCancelButton
+ *
+ *	RETURNS:
+ *		bool		true if we should continue processing whatever user-cancelable operation there is; or
+ *					false if the user clicked Cancel and we should stop.
+ */
+
+bool CStatusDlg::CheckCancelButton()
+{
+	MSG msg;
+
+	// Simple message loop to allow the Cancel button to work
+	while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	{
+		if (!::IsDialogMessage(GetSafeHwnd(), &msg))
+		{
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+		}
+	}
+
+	if (m_bCancelClicked)
+		return false;
+
+	return true;
+}
+
