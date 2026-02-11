@@ -145,21 +145,11 @@ void CSMS_MMS_ReaderDoc::Dump(CDumpContext& dc) const
 bool ReadFileCallback(void *p, double dFractionComplete)
 {
 	CStatusDlg *pDlg = (CStatusDlg *) p;
-	MSG msg;
 
 	pDlg->SetFractionComplete(dFractionComplete);
 
-	// Simple message loop to allow the Cancel button to work
-	while (::PeekMessage(&msg, pDlg->GetSafeHwnd(), 0, 0, PM_REMOVE))
-	{
-		if (!::IsDialogMessage(pDlg->GetSafeHwnd(), &msg))
-		{
-			::TranslateMessage(&msg);
-			::DispatchMessage(&msg);
-		}
-	}
-
-	if (pDlg->m_bCancelClicked)
+	// This returns false to indicate the user clicked Cancel and we should not proceed
+	if (!pDlg->CheckCancelButton())
 		return false;
 
 	return true;
@@ -175,7 +165,9 @@ BOOL CSMS_MMS_ReaderDoc::DoReadFile(LPCTSTR lpszPathName)
 {
 	TCHAR szError[1024];
 
-	CStatusDlg dlg;
+	CWnd *pParent = AfxGetMainWnd();
+
+	CStatusDlg dlg(pParent);
 	CString csText;
 
 	/*
@@ -184,7 +176,7 @@ BOOL CSMS_MMS_ReaderDoc::DoReadFile(LPCTSTR lpszPathName)
 	 *	document instead and call this for all the files instead of just the 2nd+ files?
 	 */
 
-	if (!dlg.Create((UINT)IDD_STATUS, AfxGetMainWnd()))
+	if (!dlg.Create((UINT)IDD_STATUS, pParent))
 		AfxThrowResourceException();
 
 	csText.Format(_T("Reading File %s ..."), lpszPathName);
