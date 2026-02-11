@@ -131,6 +131,8 @@ void CThreadView::OnEditFind()
 
 void CThreadView::OnBeforeNavigate2(LPCTSTR pszURL, DWORD dwFlags, LPCTSTR pszTargetFrameName, CByteArray& baPostedData, LPCTSTR pszHeaders, BOOL *pbCancel)
 {
+	CString strError;
+
 	// TBD: special handling for http/https links - always open in external browser? have a View menu option for that too?
 
 	if (!m_bDidInitialNavigate)
@@ -178,7 +180,9 @@ void CThreadView::OnBeforeNavigate2(LPCTSTR pszURL, DWORD dwFlags, LPCTSTR pszTa
 		// Make a copy of the attachment file, to a new temporary file
 		if (!MakeTempFileName(szTempFile, _countof(szTempFile), pszTempFileName))
 		{
-			AfxMessageBox(_T("Failed creating attachment temporary filename!"), MB_OK);
+			strError.Format(_T("Failed creating attachment temporary filename: %s"), szTempFile);
+
+			AfxMessageBox(strError, MB_OK);
 			return;
 		}
 
@@ -196,7 +200,9 @@ void CThreadView::OnBeforeNavigate2(LPCTSTR pszURL, DWORD dwFlags, LPCTSTR pszTa
 
 		if (!MakeTempFileName(szHTMLFile, _countof(szHTMLFile), _T("Attach.html")))
 		{
-			AfxMessageBox(_T("Failed creating attachment HTML temporary filename!"), MB_OK);
+			strError.Format(_T("Failed creating attachment HTML temporary filename: %s"), szHTMLFile);
+
+			AfxMessageBox(strError, MB_OK);
 			return;
 		}
 
