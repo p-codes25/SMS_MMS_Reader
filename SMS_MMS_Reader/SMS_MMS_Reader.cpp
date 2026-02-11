@@ -247,26 +247,32 @@ void CSMS_MMS_ReaderApp::OnFileOpen()
  *	Creates a new temporary file and returns the filename (on return, the returned temporary filename will exist and be zero-length,
  *	but no file handle is returned, so the caller must reopen it).
  *
- *	Why did I write this instead of using the standard Windows GetTempFileName()?  I think it was so that the resultant temporary
- *	filename would be similar to the original filename and thus easier to identify when I was poking around the %TEMP% directory
- *	during development...
+ *	Why did I write this instead of using the standard Windows GetTempFileName()?  Mainly so that the resultant temporary filename
+ *	would be similar to the original filename and thus easier to identify when I was poking around the %TEMP% directory during
+ *	development...
  *
  *	PARAMETERS:
- *		pszFile			Output buffer for the new, unique temporary file name that was created.
+ *		pszFile			On success, receives the new, unique temporary file name that was created; on failure, receives the error string.
  *		nMaxFile		Size of the buffer at *pszFile, in CHARACTERS (not bytes!)
  *		pszBaseName		Filename ONLY (without a directory/path) which the new temporary filename will be based on.  The filename
  *						at *pszBaseName MUST have a file extension (e.g. ".jpg").  For example, for a pszBaseName of "IMG_1234.jpg",
  *						a temporary filename of "IMG_1234_001.jpg" might be generated and returned in *pszFile.
  *
- *	The input filename (pszBaseName) should be a filename ONLY (without a directory).  The output filename will be a fully-qualified
- *	path+filename.
+ *	RETURNS:
+ *		bool			true if the filename was generated and stored in *pszFile; false if an error occurred, in which case the error
+ *						string is placed in *pszFile.
+ *
+ *	NOTES:
+ *		The input filename (pszBaseName) should be a filename ONLY (without a directory).  The output filename will be a fully-qualified
+ *		path+filename.
  */
 
 bool MakeTempFileName(TCHAR *pszFile, int nMaxFile, const TCHAR *pszBaseName)
 {
 	TCHAR szFileName[MAX_PATH];
 	TCHAR szTry[MAX_PATH];
-	int nLen, nSuffix;
+	int nLen, nError, nTry;
+	unsigned int uSuffix;
 	HANDLE hFile;
 
 	GetTempPath(_countof(szFileName), szFileName);
@@ -275,7 +281,11 @@ bool MakeTempFileName(TCHAR *pszFile, int nMaxFile, const TCHAR *pszBaseName)
 
 	// Make sure we have room to add a suffix if needed
 	if (nLen >= MAX_PATH - 10)
+	{
+		_sntprintf_s(pszFile, nMaxFile, _TRUNCATE, _T("Temp path is too long (%d characters)."), nLen);
+
 		return false;
+	}
 
 	if (nLen > 0 && szFileName[nLen - 1] != '\\')
 	{
@@ -284,32 +294,37 @@ bool MakeTempFileName(TCHAR *pszFile, int nMaxFile, const TCHAR *pszBaseName)
 
 	_tcscat_s(szFileName, _countof(szFileName), pszBaseName);
 
-	// TBD: how many files should we allow? 10,000 seems like enough for now...
-	for (nSuffix = 0; nSuffix <= 9999; ++nSuffix)
+	// TBD: how many attempts should we perform? After 100 tries we should get a unique filename...
+	for (nTry = 0; nTry < 100; ++nTry)
 	{
+		TCHAR szSuffix[32];
+		int nSuffixLen;
+		TCHAR *pszDot;
+
 		_tcscpy_s(szTry, _countof(szTry), szFileName);
 
-		if (nSuffix > 0)
+		// Tack on a random numeric suffis
+		if (rand_s(&uSuffix) != 0)
 		{
-			TCHAR szSuffix[32];
-			int nSuffixLen;
-			TCHAR *pszDot;
+			_sntprintf_s(pszFile, nMaxFile, _TRUNCATE, _T("Failed to generate random file suffix!"));
 
-			// Use the number as a suffix to the filename, to make it unique but still recognizable
-			wnsprintf(szSuffix, _countof(szSuffix), _T("_%d"), nSuffix);
-
-			nSuffixLen = (int)_tcslen(szSuffix);
-
-			pszDot = _tcsrchr(szTry, _T('.'));
-
-			// If no dot, then append our suffix to the end of the filename
-			if (pszDot == NULL)
-				pszDot = _tcschr(szTry, '\0');
-
-			memmove((void *)(pszDot + nSuffixLen), (void *)pszDot, (_tcslen(pszDot) + 1) * sizeof(TCHAR));
-
-			memcpy((void *)pszDot, (void *)szSuffix, nSuffixLen * sizeof(TCHAR));
+			return false;
 		}
+
+		// Use the number as a suffix to the filename, to make it unique but still recognizable
+		wnsprintf(szSuffix, _countof(szSuffix), _T("_%u"), uSuffix);
+
+		nSuffixLen = (int)_tcslen(szSuffix);
+
+		pszDot = _tcsrchr(szTry, _T('.'));
+
+		// If no dot, then append our suffix to the end of the filename
+		if (pszDot == NULL)
+			pszDot = _tcschr(szTry, '\0');
+
+		memmove((void *)(pszDot + nSuffixLen), (void *)pszDot, (_tcslen(pszDot) + 1) * sizeof(TCHAR));
+
+		memcpy((void *)pszDot, (void *)szSuffix, nSuffixLen * sizeof(TCHAR));
 
 		// Try to create a new file; if this filename already exists, this will fail
 		hFile = CreateFile(szTry,
@@ -322,12 +337,22 @@ bool MakeTempFileName(TCHAR *pszFile, int nMaxFile, const TCHAR *pszBaseName)
 
 		if (hFile != INVALID_HANDLE_VALUE)
 		{
-			// Did we get the file?  If so, close it and return its name to the caller
+			// Success case -- we created the file!  Close it and return its name to the caller
 			CloseHandle(hFile);
 			_tcscpy_s(pszFile, nMaxFile, szTry);
 			return true;
 		}
+
+		if ((nError = GetLastError()) != ERROR_FILE_EXISTS)
+		{
+			// Some error other than the file already existing -- bail out now
+			_sntprintf_s(pszFile, nMaxFile, _TRUNCATE, _T("Error %d creating temp file '%s'."), nError, szTry);
+			return false;
+		}
+
+		// Otherwise keep looping, try the next file number
 	}
 
+	_sntprintf_s(pszFile, nMaxFile, _TRUNCATE, _T("Too many temporary files for '%s'."), szTry);
 	return false;
 }
