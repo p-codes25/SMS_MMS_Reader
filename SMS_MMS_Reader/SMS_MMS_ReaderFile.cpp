@@ -568,9 +568,13 @@ BOOL CSMSThreadList::ProcessTag(LPCTSTR pcTag)
 					smsPart.m_PartType = CMessagePart::MMS_UNKNOWN;
 				}
 			}
-			else if (!_tcscmp(pszName, _T("cl")))	// Could also use "fn" or "name" if "cl" attribute isn't present...
+			else if (!_tcscmp(pszName, _T("name")) ||
+				!_tcscmp(pszName, _T("fn")) ||
+				!_tcscmp(pszName, _T("cl")))
 			{
-				smsPart.m_strName = (LPCTSTR) csValue;
+				// Don't store a null value; just store the first one we find, out of name, fn or cl fields
+				if (csValue != "null" && smsPart.m_strName.empty())
+					smsPart.m_strName = (LPCTSTR)csValue;
 			}
 			else if (!_tcscmp(pszName, _T("data")) || !_tcscmp(pszName, _T("text")))
 			{
